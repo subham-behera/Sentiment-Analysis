@@ -1,32 +1,45 @@
 import streamlit as st
 import joblib
+import numpy as np
 import tensorflow as tf
-from keras.models import load_model
-from keras.preprocessing.sequence import pad_sequences
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import re
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Load the tokenizer and model
+# Load the model and tokenizer
+model = tf.keras.models.load_model('sentiment_model.h5')
 tokenizer = joblib.load('tokenizer.pkl')
-model = load_model('model.h5')
+label_encoder = joblib.load('label_encoder.pkl')
 
-# Define the maximum length of sequences (must match the training settings)
-max_len = 200
+# Download NLTK stopwords
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 
-# Define the sentiment labels
-sentiment = ['Neutral', 'Negative', 'Positive']
+# Data Preprocessing
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'http\S+', '', text)
+    text = re.sub(r'@\w+', '', text)
+    text = re.sub(r'#\w+', '', text)
+    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\d+', '', text)
+    text = text.strip()
+    tokens = word_tokenize(text)
+    tokens = [word for word in tokens if word not in stopwords.words('english')]
+    return ' '.join(tokens)
 
-def predict(text):
-    sequence = tokenizer.texts_to_sequences([text])
-    test = pad_sequences(sequence, maxlen=max_len)
-    return sentiment[model.predict(test).argmax()]
+def predict_sentiment(text):
+    clean_text = preprocess_text(text)
+    sequence = tokenizer.texts_to_sequences([clean_text])
+    padded_sequence = pad_sequences(sequence, maxlen=100, padding='post', truncating='post')
+    prediction = model.predict(padded_sequence)
+    sentiment = label_encoder.inverse_transform(np.argmax(prediction, axis=1))
+    return sentiment[0]
 
-# Streamlit app
-st.title("Sentiment Analysis")
-
-text = st.text_area("Enter text for sentiment analysis:")
-
-if st.button("Predict"):
-    if text:
-        result = predict(text)
-        st.write(f"Sentiment: {result}")
-    else:
-        st.write("Please enter some text.")
+st.title('Sentiment Analysis App')
+text_input = st.text_area('Enter Text:')
+if st.button('Predict'):
+    sentiment = predict_sentiment(text_input)
+    st.write(f'Sentiment: {sentiment}')
