@@ -1,8 +1,8 @@
 streamlit==1.36.0
 numpy==1.24.3
-pandas==2.2.2
+pandas==1.2.2  # Adjusted to a version that matches your environment
 nltk==3.8.1
 gensim==4.3.2
-tensorflow==2.11.0
-keras==2.11.0
+tensorflow==2.17.0  # Using a compatible TensorFlow version
+keras==2.7.0  # Adjusted to a version that matches TensorFlow 2.17.0
 joblib
