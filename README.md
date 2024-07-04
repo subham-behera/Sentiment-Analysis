@@ -8,11 +8,13 @@ This project aims to analyze the sentiment of a given statement, classifying it 
 
 ## Files in the Repository
 
-- **`index.py`**: Main file to run the Streamlit app.
-- **`model.pkl`**: Pre-trained sentiment analysis model saved using joblib.
-- **`requirements.txt`**: List of Python packages required to run the app.
-- **`README.md`**: Project documentation.
-- **`train.csv`**: The dataset and any other necessary data files.
+- **label_encoder.pkl**: A pickle file containing the label encoder used for encoding the target labels.
+- **sentiment_model.h5**: The main sentiment analysis model saved in HDF5 format.
+- **tokenizer.pkl**: A pickle file containing the tokenizer used for text preprocessing.
+- **index.py**: Streamlit application script.
+- **requirements.txt**: List of dependencies required to run the project.
+- **README.md**: Project documentation.
+
 
 ## Installation
 
